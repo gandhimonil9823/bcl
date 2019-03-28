@@ -1,3 +1,4 @@
+
 "use strict";
 
 const utils = require('./utils.js');
@@ -5,7 +6,7 @@ const utils = require('./utils.js');
 /**
  * A transaction is made up of a collection of inputs and outputs.
  * The total value of the outputs must equal or exceed the inputs.
- * 
+ * //outputs ---> wallet UTXO's
  * One exception: coinbase transactions have no inputs; Their total
  * outputs should match up with the transaction fees from the
  * transactions in the block, plus an extra reward for for the block
@@ -14,7 +15,6 @@ const utils = require('./utils.js');
  * For a transaction, the mining fee is specified as the difference
  * between the total value of the inputs and the total value of the
  * outputs.
- * 
  */
 module.exports = class Transaction {
 
@@ -87,7 +87,7 @@ module.exports = class Transaction {
    */
   isValid(utxos) {
 
-    //
+       //
     // **YOUR CODE HERE**
     //
     // Return false if the sum of inputs is less than the sum of outputs.
@@ -104,9 +104,33 @@ module.exports = class Transaction {
     //      is valid.
     // 4) From here, you can gather the amount of **input** available to
     //      this transaction.
+    
+    // 
 
-  }
+    let total = 0;
 
+    this.inputs.forEach((input) => { 
+
+      if(Object.keys(utxos).includes(input.txID)){
+        let keyInUtxo = Object.keys(utxos).find(function(element) { if(element === input.txID) return element});
+        // console.log(keyInUtxo);
+        let valueInUtxo = utxos[keyInUtxo];
+        // console.log(valueInUtxo);
+        let utxo = valueInUtxo[input.outputIndex];
+        if(!(utils.hash(input.pubKey, "base64") === utxo.address)){
+          return false;
+        }
+        if(!utils.verifySignature(input.pubKey, utxo, input.sig)){
+          return false;
+        }
+        total = total + utxo.amount;
+      }
+    });
+      if(this.totalOutput() > total){
+        return false;
+      }
+      return true;
+    }
   /**
    * This method is used to give an additional reward to the miner for including a
    * transaction.  All rewards are added to the first output in this transaction.
@@ -131,3 +155,4 @@ module.exports = class Transaction {
       0);
   }
 }
+

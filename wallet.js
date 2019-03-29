@@ -97,58 +97,59 @@ module.exports = class Wallet {
     else{
       for(let i = 0; i < this.coins.length;i++){
         let inputToAdd = {};
-        if(i == 0)
-        {
-          if(this.coins[i].output.amount >= amount)
-          {
-            let coinAdd = this.coins[i];
-            inputToAdd.txID = coinAdd.txID;
-            inputToAdd.outputIndex = coinAdd.outputIndex;
-            inputToAdd.pubKey = this.addresses[coinAdd.output.address].public;
-            inputToAdd.sig = utils.sign(this.addresses[coinAdd.output.address].private, coinAdd.output)
-            arrayInput.push(inputToAdd);
-            change = this.coins[i].output.amount - amount;
-            this.coins.splice(i,1);
-            return {
-              inputs: arrayInput,
-              changeAmt: change,
-            };
-          }
-          else
-          {
-            total = total + this.coins[i].output.amount;
-            let coinAdd = this.coins[i];
-            inputToAdd.txID = coinAdd.txID;
-            inputToAdd.outputIndex = coinAdd.outputIndex;
-            inputToAdd.pubKey = this.addresses[coinAdd.output.address].public;
-            inputToAdd.sig = utils.sign(this.addresses[coinAdd.output.address].private, coinAdd.output)
-            arrayInput.push(inputToAdd);
-            this.coins.splice(i,1);
-          }
-        }
-        else
-        {
-          total = total + this.coins[i].output.amount;
-          if(total >= amount)
-          {
-            let coinAdd = this.coins[i];
-            inputToAdd.txID = coinAdd.txID;
-            inputToAdd.outputIndex = coinAdd.outputIndex;
-            inputToAdd.pubKey = this.addresses[coinAdd.output.address].public;
-            inputToAdd.sig = utils.sign(this.addresses[coinAdd.output.address].private, coinAdd.output)
-            arrayInput.push(inputToAdd);
-            change = total - amount;
-            this.coins.splice(i,1);
-            return {
-              inputs: arrayInput,
-              changeAmt: change,
-            };
-          }
-        }
-
-
+      if(i == 0)
+      {
+        if(this.coins[i].output.amount >= amount)
+      {
+        let coinAdd = this.coins[i];
+        inputToAdd.txID = coinAdd.txID;
+        inputToAdd.outputIndex = coinAdd.outputIndex;
+        inputToAdd.pubKey = this.addresses[coinAdd.output.address].public;
+        inputToAdd.sig = utils.sign(this.addresses[coinAdd.output.address].private, coinAdd.output)
+        arrayInput.push(inputToAdd);
+        change = this.coins[i].output.amount - amount;
+        this.coins.splice(i,1);
+        return {
+          inputs: arrayInput,
+          changeAmt: change,
+        };
+      }
+      else
+      {
+        total = total + this.coins[i].output.amount;
+        let coinAdd = this.coins[i];
+        inputToAdd.txID = coinAdd.txID;
+        inputToAdd.outputIndex = coinAdd.outputIndex;
+        inputToAdd.pubKey = this.addresses[coinAdd.output.address].public;
+        inputToAdd.sig = utils.sign(this.addresses[coinAdd.output.address].private, coinAdd.output)
+        arrayInput.push(inputToAdd);
       }
     }
+    else
+    {
+      total = total + this.coins[i].output.amount;
+      if(total >= amount)
+      {
+        let coinAdd = this.coins[i];
+        inputToAdd.txID = coinAdd.txID;
+        inputToAdd.outputIndex = coinAdd.outputIndex;
+        inputToAdd.pubKey = this.addresses[coinAdd.output.address].public;
+        inputToAdd.sig = utils.sign(this.addresses[coinAdd.output.address].private, coinAdd.output)
+        arrayInput.push(inputToAdd);
+        change = total - amount;
+        return {
+          inputs: arrayInput,
+          changeAmt: change,
+        };
+      }
+    }
+  }
+}
+  }
+
+
+  
+  
     //
     // **YOUR CODE HERE**
     //
@@ -166,7 +167,7 @@ module.exports = class Wallet {
     //   changeAmt: 0,
     // };
 
-  }
+
 
   /**
    * Makes a new keypair and calculates its address from that.

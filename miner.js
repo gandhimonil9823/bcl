@@ -98,8 +98,14 @@ module.exports = class Miner extends Client {
       // After that, create a new block and start searching for a proof.
       // The 'startNewSearch' method might be useful for this last step.
 
+      if(this.currentBlock.verifyProof){
+        this.receiveOutput(this.currentBlock.coinbaseTX);
+        this.announceProof();
+        this.startNewSearch();
+      }
       this.currentBlock.proof++;
     }
+    
     // If we are testing, don't continue the search.
     if (!oneAndDone) {
       // Check if anyone has found a block, and then return to mining.
@@ -122,6 +128,7 @@ module.exports = class Miner extends Client {
    */
   isValidBlock(b) {
     // FIXME: Should verify that a block chains back to a previously accepted block.
+    this.previousBlocks
     if (!b.verifyProof()) {
       this.log(`Invalid proof.`);
       return false;
@@ -139,6 +146,7 @@ module.exports = class Miner extends Client {
   receiveBlock(s) {
     let b = Block.deserialize(s);
     // FIXME: should not rely on the other block for the utxos.
+
     if (!this.isValidBlock(b)) {
       this.log(`rejecting invalid block: ${s}`);
       return false;

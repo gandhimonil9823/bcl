@@ -181,35 +181,48 @@ module.exports = class Block {
    *      This setting is useful for coinbase transactions.
    */
   addTransaction(tx, forceAccept) {
-    this.transactions[tx.id] = tx;
+    let value = 0;
     if (!forceAccept && !this.willAcceptTransaction(tx)) {
       throw new Error(`Transaction ${tx.id} is invalid.`);
     }
-    // console.log(this.utxos);
-    if(forceAccept && this.willAcceptTransaction(tx)){
-      console.log("Monilllllllllllllllllllllllll")
-      tx.outputs.forEach((element) => { 
-        console.log(element);
-        this.utxos[element.address] = element;
-      });
-    }
+    this.transactions.set(tx.id,tx);
+    // if(forceAccept && this.willAcceptTransaction(tx)){
+    //   // tx.outputs.forEach((element) => { 
+    //   //   console.log(element);
+    //   //   this.utxos[element.address] = element;
+    //   // });
+    //   this.utxos[tx.id] = tx.outputs;
+    // }
 
-    // console.log("monillllllllllllll")
-    console.log(this.utxos);
-    if(!forceAccept && this.willAcceptTransaction)
-    {
-      let value = 0;
-      tx.inputs.forEach((input) => {
-      let matchingUTXO = this.utxos[input.txID][outputIndex]
-      if(!(matchingUTXO === undefined))
-      {
-        value = matchingUTXO.amount;
-        delete this.utxos[input.txID[outputIndex]];
+  //   if(!forceAccept && this.willAcceptTransaction)
+  //   {
+  //     let value = 0;
+  //     tx.inputs.forEach((input) => {
+  //     let matchingUTXO = this.utxos[input.txID].outputIndex;
+  //     if(!(matchingUTXO === undefined))
+  //     {
+  //       value = value + matchingUTXO.amount;
+  //       delete this.utxos[input.txID].outputIndex;
+  //     }
+  //   });
+  // }
+
+    tx.inputs.forEach((input) => {
+      let matchingUTXO = this.utxos[input.txID][input.outputIndex];
+      value = value + matchingUTXO.amount;
+      delete this.utxos[input.txID][input.outputIndex];
+
+      if(this.utxos[input.txID].length == 0) {
+        delete this.utxos[input.txID];
       }
     });
-  }
-}
 
+    if(forceAccept){
+      return;
+    }
+    this.utxos[tx.id] = tx.outputs;
+    this.addTransactionFee(value - tx.totalOutput());
+  }
 
     //
     // **YOUR CODE HERE**

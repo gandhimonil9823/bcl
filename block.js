@@ -181,9 +181,35 @@ module.exports = class Block {
    *      This setting is useful for coinbase transactions.
    */
   addTransaction(tx, forceAccept) {
+    this.transactions[tx.id] = tx;
     if (!forceAccept && !this.willAcceptTransaction(tx)) {
       throw new Error(`Transaction ${tx.id} is invalid.`);
     }
+    // console.log(this.utxos);
+    if(forceAccept && this.willAcceptTransaction(tx)){
+      console.log("Monilllllllllllllllllllllllll")
+      tx.outputs.forEach((element) => { 
+        console.log(element);
+        this.utxos[element.address] = element;
+      });
+    }
+
+    // console.log("monillllllllllllll")
+    console.log(this.utxos);
+    if(!forceAccept && this.willAcceptTransaction)
+    {
+      let value = 0;
+      tx.inputs.forEach((input) => {
+      let matchingUTXO = this.utxos[input.txID][outputIndex]
+      if(!(matchingUTXO === undefined))
+      {
+        value = matchingUTXO.amount;
+        delete this.utxos[input.txID[outputIndex]];
+      }
+    });
+  }
+}
+
 
     //
     // **YOUR CODE HERE**
@@ -197,7 +223,6 @@ module.exports = class Block {
     // 3) Calculate the miner's transaction fee, determined by the difference between the inputs and the outputs.
     //    The addTransactionFee method might help you with this part.
 
-  }
 
   /**
    * Adds the transaction fee to the miner's coinbase transaction.

@@ -56,6 +56,8 @@ module.exports = class Client extends EventEmitter {
     }
 
     // Gathering the needed inputs, and specifying an address for change.
+
+    console.log(totalPayments);
     let { inputs, changeAmt } = this.wallet.spendUTXOs(totalPayments);
     if (changeAmt > 0) {
       let changeAddr = this.wallet.makeAddress();

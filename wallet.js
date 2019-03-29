@@ -87,6 +87,7 @@ module.exports = class Wallet {
 
    //let { txID, outputIndex, pubKey, sig } = inputs[0];
   spendUTXOs(amount) {
+    console.log(amount);
     let arrayInput = [];
     let change = 0;
     let total = 0;
@@ -106,8 +107,8 @@ module.exports = class Wallet {
             inputToAdd.pubKey = this.addresses[coinAdd.output.address].public;
             inputToAdd.sig = utils.sign(this.addresses[coinAdd.output.address].private, coinAdd.output)
             arrayInput.push(inputToAdd);
-            this.coins.splice(i,1);
             change = this.coins[i].output.amount - amount;
+            this.coins.splice(i,1);
             return {
               inputs: arrayInput,
               changeAmt: change,
@@ -115,7 +116,7 @@ module.exports = class Wallet {
           }
           else
           {
-            total = total + this.coins[i].amount;
+            total = total + this.coins[i].output.amount;
             let coinAdd = this.coins[i];
             inputToAdd.txID = coinAdd.txID;
             inputToAdd.outputIndex = coinAdd.outputIndex;
@@ -136,8 +137,8 @@ module.exports = class Wallet {
             inputToAdd.pubKey = this.addresses[coinAdd.output.address].public;
             inputToAdd.sig = utils.sign(this.addresses[coinAdd.output.address].private, coinAdd.output)
             arrayInput.push(inputToAdd);
-            this.coins.splice(i,1);
             change = total - amount;
+            this.coins.splice(i,1);
             return {
               inputs: arrayInput,
               changeAmt: change,

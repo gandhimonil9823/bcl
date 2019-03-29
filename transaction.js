@@ -107,8 +107,11 @@ module.exports = class Transaction {
     
     // 
 
-    let total = 0;
+    if(this.inputs.length === 0){
+      return true;
+    }
 
+    let total = 0;
     this.inputs.forEach((input) => { 
 
       if(Object.keys(utxos).includes(input.txID)){
